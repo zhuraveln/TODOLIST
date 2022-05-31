@@ -3,37 +3,46 @@ const addTaskBtn = document.querySelector('#add-task-btn')
 const todosWrapper = document.querySelector('.todos-wrapper')
 
 let tasks
-!localStorage.tasks ? tasks = [] : tasks = JSON.parse(localStorage.getItem('tasks'))
+!localStorage.tasks
+  ? (tasks = [])
+  : (tasks = JSON.parse(localStorage.getItem('tasks')))
 
 let toDoItemElem = []
 
 function Task(description) {
-    this.description = description
-    this.completed = false
-    this.date = getDate()
+  this.description = description
+  this.completed = false
+  this.date = getDate()
 }
 
 function getDate(t = new Date()) {
-    function addZero(d) {
-        return (d < 10) ? '0' + d : d
-    }
+  function addZero(d) {
+    return d < 10 ? '0' + d : d
+  }
 
-    const Y = t.getFullYear()
-    const M = addZero((t.getMonth() + 1))
-    const D = addZero(t.getDate())
-    const h = addZero(t.getHours())
-    const m = addZero(t.getMinutes())
+  const Y = t.getFullYear()
+  const M = addZero(t.getMonth() + 1)
+  const D = addZero(t.getDate())
+  const h = addZero(t.getHours())
+  const m = addZero(t.getMinutes())
 
-    const days = ['Воскрсенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг',
-     'Пятница', 'Суббота']
-    
-    const d = days[t.getDay()]
+  const days = [
+    'Воскрсенье',
+    'Понедельник',
+    'Вторник',
+    'Среда',
+    'Четверг',
+    'Пятница',
+    'Суббота',
+  ]
 
-    return `${D}.${M}.${Y} ${h}:${m} (${d})`
+  const d = days[t.getDay()]
+
+  return `${D}.${M}.${Y} ${h}:${m} (${d})`
 }
 
 const createTemplate = (task, index) => {
-    return `
+  return `
         <div class="todo-item ${task.completed ? 'checked' : ''}">
             <div class="top">
                 <div class="description">${task.description}</div>
@@ -43,6 +52,7 @@ const createTemplate = (task, index) => {
                     <button onclick="changeTask(${index})" class="btn-change">Change</button>
                 </div>
             </div>
+            
             <div class="bottom">
                 <p class="post-day">${task.date}</p>
                 <button onclick="deleteTask(${index})" class="btn-delete hide">Delete</button>
@@ -51,77 +61,85 @@ const createTemplate = (task, index) => {
 }
 
 const filterTasks = () => {
-    const activeTasks = tasks.length && tasks.filter(item => item.completed === false)
-    const completedTasks = tasks.length && tasks.filter(item => item.completed === true)
-    tasks = [...activeTasks,...completedTasks]
+  const activeTasks =
+    tasks.length && tasks.filter((item) => item.completed === false)
+  const completedTasks =
+    tasks.length && tasks.filter((item) => item.completed === true)
+  tasks = [...activeTasks, ...completedTasks]
 }
 
 const fillHtmlList = () => {
-    todosWrapper.innerHTML = ""
-    if(tasks.length > 0) {
-        filterTasks()
-        tasks.forEach((item, index) => {
-            todosWrapper.innerHTML += createTemplate(item, index)
-        })
-        toDoItemElem = document.querySelectorAll('.todo-item')
-    }
+  todosWrapper.innerHTML = ''
+  if (tasks.length > 0) {
+    filterTasks()
+    tasks.forEach((item, index) => {
+      todosWrapper.innerHTML += createTemplate(item, index)
+    })
+    toDoItemElem = document.querySelectorAll('.todo-item')
+  }
 }
 
 fillHtmlList()
 
 const updateLocal = () => {
-    localStorage.setItem('tasks', JSON.stringify(tasks))
+  localStorage.setItem('tasks', JSON.stringify(tasks))
 }
 
 const completeTask = (index) => {
-    tasks[index].completed = !tasks[index].completed
-    if(tasks[index].completed) {
-        toDoItemElem[index].classList.add('checked')
-    } else {
-        toDoItemElem[index].classList.remove('checked')
-    }
-    updateLocal()
-    fillHtmlList()
+  tasks[index].completed = !tasks[index].completed
+  if (tasks[index].completed) {
+    toDoItemElem[index].classList.add('checked')
+  } else {
+    toDoItemElem[index].classList.remove('checked')
+  }
+  updateLocal()
+  fillHtmlList()
 }
 
 function addTask() {
-    tasks.push(new Task(deskTaskInput.value))
-    updateLocal()
-    fillHtmlList()
-    deskTaskInput.value = ''
+  tasks.push(new Task(deskTaskInput.value))
+  updateLocal()
+  fillHtmlList()
+  deskTaskInput.value = ''
 }
 
 addTaskBtn.addEventListener('click', () => {
-    addTask()
+  addTask()
 })
 
 deskTaskInput.addEventListener('keydown', (event) => {
-    if(event.key === 'Enter') {
-        addTask()
-    }
+  if (event.key === 'Enter') {
+    addTask()
+  }
 })
 
 function changeTask(index) {
-    if (toDoItemElem[index].children[1].children[1].classList.value === 'btn-delete hide') {
-        toDoItemElem[index].children[1].children[1].classList.remove('hide')
-        toDoItemElem[index].children[0].children[1].children[1].classList.add('clicked')
-    } else {
-        toDoItemElem[index].children[1].children[1].classList.add('hide')
-        toDoItemElem[index].children[0].children[1].children[1].classList.remove('clicked')
-    }
+  if (
+    toDoItemElem[index].children[1].children[1].classList.value ===
+    'btn-delete hide'
+  ) {
+    toDoItemElem[index].children[1].children[1].classList.remove('hide')
+    toDoItemElem[index].children[0].children[1].children[1].classList.add(
+      'clicked'
+    )
+  } else {
+    toDoItemElem[index].children[1].children[1].classList.add('hide')
+    toDoItemElem[index].children[0].children[1].children[1].classList.remove(
+      'clicked'
+    )
+  }
 }
 
 const deleteTask = (index) => {
-    // toDoItemElems[index].classList.add('delition')
+  // toDoItemElems[index].classList.add('delition')
 
-    // setTimeout(() => {
-    //     tasks.splice(index, 1)
-    //     updateLocal()
-    //     fillHtmlList()
-    // }, 500)
+  // setTimeout(() => {
+  //     tasks.splice(index, 1)
+  //     updateLocal()
+  //     fillHtmlList()
+  // }, 500)
 
-    tasks.splice(index, 1)
-    updateLocal()
-    fillHtmlList()
+  tasks.splice(index, 1)
+  updateLocal()
+  fillHtmlList()
 }
-
